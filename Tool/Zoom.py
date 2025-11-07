@@ -7,30 +7,30 @@ import platform
 class TextMagnifier:
     def __init__(self, root):
         self.root = root
-        self.root.title("汉字与英语单词放大显示程序")
+        self.root.title("Chinese Characters and English Words Magnifier")
         self.root.geometry("900x700")
         self.root.configure(bg='#f0f0f0')
         
-        # 设置字体
+        # Set fonts
         self.setup_fonts()
         
-        # 创建界面
+        # Create interface
         self.create_widgets()
         
     def setup_fonts(self):
-        """设置可用的中文字体"""
+        """Set available Chinese fonts"""
         self.available_fonts = []
         
-        # 不同系统的字体路径
+        # Font paths for different systems
         font_paths = []
         system = platform.system()
         
         if system == "Windows":
             font_paths = [
-                "C:/Windows/Fonts/simhei.ttf",  # 黑体
-                "C:/Windows/Fonts/simsun.ttc",  # 宋体
-                "C:/Windows/Fonts/msyh.ttc",    # 微软雅黑
-                "C:/Windows/Fonts/simkai.ttf",  # 楷体
+                "C:/Windows/Fonts/simhei.ttf",  # Heiti
+                "C:/Windows/Fonts/simsun.ttc",  # Simsun
+                "C:/Windows/Fonts/msyh.ttc",    # Microsoft YaHei
+                "C:/Windows/Fonts/simkai.ttf",  # KaiTi
             ]
         elif system == "Darwin":  # macOS
             font_paths = [
@@ -44,30 +44,30 @@ class TextMagnifier:
                 "/usr/share/fonts/truetype/wqy/wqy-microhei.ttc",
             ]
         
-        # 测试字体可用性
+        # Test font availability
         for font_path in font_paths:
             if os.path.exists(font_path):
                 try:
-                    # 测试字体是否能加载
+                    # Test if font can be loaded
                     test_font = ImageFont.truetype(font_path, 20)
                     self.available_fonts.append(font_path)
-                    print(f"找到可用字体: {font_path}")
+                    print(f"Found available font: {font_path}")
                 except:
                     continue
         
-        # 如果没有找到系统字体，使用PIL的默认字体
+        # Use PIL default font if no system fonts found
         if not self.available_fonts:
-            print("未找到系统字体，使用默认字体")
+            print("No system fonts found, using default font")
             self.default_font = ImageFont.load_default()
         else:
             self.default_font = None
         
-        # 当前字体索引
+        # Current font index
         self.current_font_index = 0
         self.current_font_size = 100
     
     def get_current_font(self, size):
-        """获取当前字体"""
+        """Get current font"""
         if self.available_fonts:
             try:
                 return ImageFont.truetype(self.available_fonts[self.current_font_index], size)
@@ -76,23 +76,23 @@ class TextMagnifier:
         return ImageFont.load_default()
     
     def create_widgets(self):
-        """创建界面组件"""
-        # 标题
-        title_label = tk.Label(self.root, text="汉字与英语单词放大显示器", 
+        """Create interface components"""
+        # Title
+        title_label = tk.Label(self.root, text="Chinese Characters and English Words Magnifier", 
                               font=("Arial", 18, "bold"), 
                               bg='#f0f0f0', fg='#333333')
         title_label.pack(pady=15)
         
-        # 输入区域框架
+        # Input area frame
         input_frame = tk.Frame(self.root, bg='#f0f0f0')
         input_frame.pack(pady=10, fill='x', padx=20)
         
-        # 输入标签
-        input_label = tk.Label(input_frame, text="输入文本:", 
+        # Input label
+        input_label = tk.Label(input_frame, text="Enter Text:", 
                               font=("Arial", 12), bg='#f0f0f0')
         input_label.grid(row=0, column=0, padx=5, pady=5, sticky='w')
         
-        # 输入框
+        # Input field
         self.text_var = tk.StringVar()
         self.text_entry = tk.Entry(input_frame, textvariable=self.text_var, 
                                   font=("Arial", 14), width=50)
@@ -101,12 +101,12 @@ class TextMagnifier:
         
         input_frame.columnconfigure(1, weight=1)
         
-        # 控制面板
+        # Control panel
         control_frame = tk.Frame(self.root, bg='#f0f0f0')
         control_frame.pack(pady=10, fill='x', padx=20)
         
-        # 字体大小调整
-        size_label = tk.Label(control_frame, text="字体大小:", 
+        # Font size adjustment
+        size_label = tk.Label(control_frame, text="Font Size:", 
                              font=("Arial", 10), bg='#f0f0f0')
         size_label.grid(row=0, column=0, padx=5, sticky='w')
         
@@ -118,9 +118,9 @@ class TextMagnifier:
                              length=200, font=("Arial", 8))
         size_scale.grid(row=0, column=1, padx=5, sticky='w')
         
-        # 字体选择（如果有多个字体可用）
+        # Font selection (if multiple fonts available)
         if len(self.available_fonts) > 1:
-            font_label = tk.Label(control_frame, text="选择字体:", 
+            font_label = tk.Label(control_frame, text="Select Font:", 
                                  font=("Arial", 10), bg='#f0f0f0')
             font_label.grid(row=0, column=2, padx=(20,5), sticky='w')
             
@@ -132,20 +132,20 @@ class TextMagnifier:
             font_combo.grid(row=0, column=3, padx=5, sticky='w')
             font_combo.bind('<<ComboboxSelected>>', self.change_font)
         
-        # 按钮框架
+        # Button frame
         button_frame = tk.Frame(control_frame, bg='#f0f0f0')
         button_frame.grid(row=0, column=4, padx=(20,0), sticky='e')
         
-        # 放大按钮
-        magnify_btn = tk.Button(button_frame, text="放大显示", 
+        # Magnify button
+        magnify_btn = tk.Button(button_frame, text="Magnify", 
                                font=("Arial", 10), 
                                command=self.magnify_text,
                                bg='#4CAF50', fg='white',
                                width=10, height=1)
         magnify_btn.pack(side='left', padx=5)
         
-        # 清空按钮
-        clear_btn = tk.Button(button_frame, text="清空", 
+        # Clear button
+        clear_btn = tk.Button(button_frame, text="Clear", 
                              font=("Arial", 10), 
                              command=self.clear_text,
                              bg='#f44336', fg='white',
@@ -154,53 +154,53 @@ class TextMagnifier:
         
         control_frame.columnconfigure(4, weight=1)
         
-        # 显示区域
+        # Display area
         display_frame = tk.Frame(self.root, bg='white', relief='sunken', bd=2)
         display_frame.pack(pady=15, padx=20, fill='both', expand=True)
         
-        # 创建文本显示标签（直接使用Tkinter的Label，支持大字体）
+        # Create text display label (using Tkinter Label directly, supports large fonts)
         self.display_label = tk.Label(display_frame, text="", 
                                      bg='white', fg='black',
                                      font=("Arial", self.current_font_size),
                                      wraplength=800)
         self.display_label.pack(expand=True, fill='both', padx=10, pady=10)
         
-        # 状态信息
+        # Status information
         self.status_var = tk.StringVar()
         status_label = tk.Label(self.root, textvariable=self.status_var,
                                font=("Arial", 9), bg='#f0f0f0', fg='#666666')
         status_label.pack(pady=5)
         
-        # 更新状态信息
+        # Update status information
         self.update_status()
         
-        # 提示文字
+        # Hint text
         hint_label = tk.Label(self.root, 
-                             text="提示：输入汉字或英语单词后点击'放大显示'或按回车键",
+                             text="Tip: Enter Chinese characters or English words and click 'Magnify' or press Enter",
                              font=("Arial", 10), bg='#f0f0f0', fg='#666666')
         hint_label.pack(pady=5)
         
-        # 示例文本按钮
-        example_btn = tk.Button(self.root, text="插入示例文本", 
+        # Example text button
+        example_btn = tk.Button(self.root, text="Insert Example", 
                                font=("Arial", 9),
                                command=self.insert_example,
                                bg='#2196F3', fg='white')
         example_btn.pack(pady=5)
         
-        # 焦点设置在输入框
+        # Set focus to input field
         self.text_entry.focus()
     
     def update_status(self):
-        """更新状态信息"""
+        """Update status information"""
         font_count = len(self.available_fonts)
         if font_count > 0:
             current_font = os.path.basename(self.available_fonts[self.current_font_index])
-            self.status_var.set(f"找到 {font_count} 种字体 | 当前字体: {current_font} | 字体大小: {self.current_font_size}")
+            self.status_var.set(f"Found {font_count} fonts | Current font: {current_font} | Font size: {self.current_font_size}")
         else:
-            self.status_var.set("使用默认字体 | 字体大小: {self.current_font_size}")
+            self.status_var.set(f"Using default font | Font size: {self.current_font_size}")
     
     def change_font(self, event=None):
-        """更改字体"""
+        """Change font"""
         selected_font = self.font_var.get()
         for i, font_path in enumerate(self.available_fonts):
             if os.path.basename(font_path) == selected_font:
@@ -210,53 +210,53 @@ class TextMagnifier:
         self.update_status()
     
     def magnify_text(self, event=None):
-        """放大显示文本"""
+        """Magnify and display text"""
         text = self.text_var.get().strip()
         
         if not text:
-            messagebox.showwarning("提示", "请输入要放大的文本")
+            messagebox.showwarning("Tip", "Please enter text to magnify")
             return
         
-        # 直接使用Tkinter的Label显示大字体文本
+        # Use Tkinter Label directly to display large font text
         font_size = self.size_var.get()
         self.current_font_size = font_size
         
-        # 创建字体（使用系统支持的字体）
+        # Create font (using system-supported fonts)
         font_spec = ("Arial", font_size)
         
-        # 尝试使用中文字体
+        # Try to use Chinese fonts
         if self.available_fonts:
             try:
-                # 获取字体名称（不带扩展名）
+                # Get font name (without extension)
                 font_name = os.path.basename(self.available_fonts[self.current_font_index]).split('.')[0]
                 font_spec = (font_name, font_size)
             except:
                 pass
         
-        # 更新显示
+        # Update display
         self.display_label.config(text=text, font=font_spec)
         self.update_status()
     
     def update_display(self, value=None):
-        """更新显示（滑块回调）"""
+        """Update display (slider callback)"""
         if self.text_var.get().strip():
             self.magnify_text()
     
     def clear_text(self):
-        """清空文本"""
+        """Clear text"""
         self.text_var.set("")
         self.display_label.config(text="")
         self.text_entry.focus()
     
     def insert_example(self):
-        """插入示例文本"""
+        """Insert example text"""
         examples = [
-            "你好 Hello World!",
-            "汉字 Chinese Characters", 
-            "放大效果 Magnification",
-            "Python 编程 Programming",
-            "测试中文显示 Test Chinese Display",
-            "这是一个测试 This is a test"
+            "Hello 你好 World!",
+            "Chinese Characters 汉字", 
+            "Magnification 放大效果",
+            "Python Programming 编程",
+            "Test Chinese Display 测试中文显示",
+            "This is a test 这是一个测试"
         ]
         import random
         example = random.choice(examples)
@@ -265,13 +265,13 @@ class TextMagnifier:
         self.text_entry.focus()
 
 def main():
-    # 创建主窗口
+    # Create main window
     root = tk.Tk()
     
-    # 创建应用程序
+    # Create application
     app = TextMagnifier(root)
     
-    # 运行主循环
+    # Run main loop
     root.mainloop()
 
 if __name__ == "__main__":
